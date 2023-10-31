@@ -1,6 +1,9 @@
 require('dotenv').config();
 require('express-async-errors');
 const express = require('express');
+const connectDB = require('./db/connect')
+const AuthRouter = require('./routes/auth')
+const JobsRouter = require('./routes/jobs')
 const app = express();
 
 // error handler
@@ -15,6 +18,9 @@ app.get('/', (req, res) => {
   res.send('jobs api');
 });
 
+app.use('/api/v1/auth', AuthRouter)
+app.use('/api/v1/jobs',JobsRouter)
+
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
@@ -22,6 +28,7 @@ const port = process.env.PORT || 3000;
 
 const start = async () => {
   try {
+    await connectDB(process.env.MONGO_URI)
     app.listen(port, () =>
       console.log(`Server is listening on port ${port}...`)
     );
